@@ -1,0 +1,53 @@
+{% extends 'dashboard/base.html' %}
+
+
+
+
+
+{% block content %}
+
+<div class="col-lg-4 col-md-6">
+         <div class="card">
+            <div class="card-body">
+               <h4 class="font-weight-bold mb-3">Popular Categories</h4>
+               <div id="chart-apex-column-03" class="custom-chart"></div>
+               <div class="d-flex justify-content-around align-items-center">
+                  <div><svg width="24" height="24" viewBox="0 0 24 24" fill="#ffbb33" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="3" width="18" height="18" rx="2" fill="#ffbb33" />
+                        </svg>
+
+                        <span>Mobile</span>
+                  </div>
+                  <div>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#e60000" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="3" width="18" height="18" rx="2" fill="#e60000" />
+                        </svg>
+
+                        <span>Laptop</span>
+                  </div>
+               </div>
+               <div class="d-flex justify-content-around align-items-center mt-3">
+                  <div>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="primary" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="3" width="18" height="18" rx="2" fill="#04237D" />
+                        </svg>
+
+                        <span>Electronics</span>
+                  </div>
+                  <div>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="primary" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="3" width="18" height="18" rx="2" fill="#8080ff" />
+                        </svg>
+
+                        <span>Others</span>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+
+
+
+
+{% endblock %}

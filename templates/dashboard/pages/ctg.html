@@ -1,0 +1,274 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block content %}
+
+        <div class="card">
+              <div class="card-header d-flex justify-content-between">
+                 <div class="header-title">
+                    <h4 class="card-title">Categoriyalar Ro'yxati</h4>
+                 </div>
+
+
+              </div>
+
+              <div class="card-body">
+
+                  {% if success %}
+                  <div class="alert alert-success" role="alert">
+                       <div class="iq-alert-text">{{ success }}</div>
+                 </div>
+                  {% endif %}
+                    {% if error %}
+                  <div class="alert alert-danger" role="alert">
+                       <div class="iq-alert-text">{{ error }}</div>
+                 </div>
+                  {% endif %}
+
+                 <div class="table-editable">
+                    <span class="table-add float-right mb-3 mr-2">
+                    <button class="btn btn-sm bg-primary" data-toggle="modal" data-target="#CtgAdd">
+                        <span>Yangi Qo'shish</span>
+                    </button>
+                    </span>
+                    <table class="table table-bordered table-responsive-md table-striped text-center">
+                       <thead>
+                          <tr>
+                             <th>ID</th>
+                             <th>Name</th>
+                             <th>Slug(Ssilka Uchun ishlatiladi)</th>
+                             <th>Menuda Chiqadimi?</th>
+
+                             <th>Actions</th>
+                          </tr>
+                       </thead>
+                       <tbody>
+
+                       {% for i in ctgs %}
+                          <tr>
+                             <td>{{ i.id }}</td>
+                             <td><span style="text-size: 24px;"><b>{{ i.name }}</b></span></td>
+                             <td>{{ i.slug }}</td>
+                             <td>
+                                {% if i.is_menu %}
+                                <span class="text-success">
+                                   <i class="fas fa-check"></i>
+                                </span>
+                                 {% else %}
+                                <span class="text-danger">
+                                   <i class="fas fa-close"></i>
+                                </span>
+
+                                {% endif %}
+                             </td>
+                             <td>
+
+                                <button class="btn btn-outline-primary rounded-pill btn-sm" data-toggle="modal" data-target="#CtgEdit_{{ i.id }}">
+                                   <i class="fas fa-pencil">
+                                   </i>
+                                </button>
+                                <button class="btn btn-outline-danger rounded-pill btn-sm" data-toggle="modal" data-target="#deleteModal-{{ i.id }}" >
+                                   <i class="fas fa-trash">
+                                   </i>
+                                </button>
+
+
+                             </td>
+
+                          </tr>
+                       {% endfor %}
+
+                       </tbody>
+                    </table>
+                 </div>
+
+                 <hr>
+
+               <nav aria-label="...">
+
+                  <ul class="pagination justify-content-start">
+
+
+                   {% if ctgs.has_previous %}
+                     <li class="page-item ">
+                        <a class="page-link" href="?page={{ ctgs.previous_page_number }}" tabindex="-1" aria-disabled="true"><<</a>
+                     </li>
+                     {% endif %}
+
+
+                     {% for i in paginator.page_range %}
+                     {% if i == page %}
+
+                     <li class="page-item active" aria-current="page">
+                        <a class="page-link">{{ i }} <span class="sr-only">(current)</span></a>
+                     </li>
+                     {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                     {% endif %}
+                     {% endfor %}
+
+
+                     {% if ctgs.has_next %}
+                     <li class="page-item">
+
+                        <a class="page-link" href="?page={{ ctgs.next_page_number }}"> >> </a>
+                     </li>
+                        {% endif %}
+
+
+                  </ul>
+
+               </nav>
+
+
+              </div>
+
+           </div>
+
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="CtgAdd" tabindex="-1" role="dialog" aria-labelledby="categoryForm" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered" role="document">
+      <form class="modal-content" method="post" action="{% url 'ctg-add' %}">
+          {% csrf_token %}
+         <div class="modal-header">
+            <h5 class="modal-title" id="CtgAddTitle">Yangi Kategoriya Qo'shish</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+
+             <div class="row">
+                  <div class="col-md-6">
+                     <input type="text" class="form-control" name="name" placeholder="Category name">
+                  </div>
+                  <div class="col-md-6">
+
+                     <input type="text" class="form-control" name="slug" placeholder="Category Slug">
+                  </div>
+
+                 <div class="col-md-6" style="left: 35%">
+
+                    <div class="custom-control custom-switch custom-switch-icon custom-control-inline">
+                    <div class="custom-switch-inner">
+                       <p class="mb-0"> Menuda Chiqsinmi! </p>
+                       <input name="is_menu" type="checkbox" class="custom-control-input" id="customSwitch-0" checked="">
+                       <label class="custom-control-label" for="customSwitch-0">
+                          <span class="switch-icon-left"><i class="fa fa-check"></i></span>
+                          <span class="switch-icon-right"><i class="fa fa-times"></i></span>
+                       </label>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+         </div>
+      </form>
+   </div>
+</div>
+
+
+
+
+
+{% for i in ctgs %}
+<!-- Modal -->
+<div class="modal fade" id="CtgEdit_{{ i.id }}" tabindex="-1" role="dialog" aria-labelledby="categoryForm" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered" role="document">
+      <form class="modal-content" method="post" action="{% url 'ctg-edit' pk=i.id %}">
+          {% csrf_token %}
+         <div class="modal-header">
+            <h5 class="modal-title" id="CtgEditTitle">Kategoriya O'zgartirish: {{ i.name }}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+
+             <div class="row">
+                  <div class="col-md-6">
+                     <input type="text" value="{{ i.name }}" class="form-control" name="name" placeholder="Category name">
+                  </div>
+                  <div class="col-md-6">
+
+                     <input type="text" value="{{ i.slug }}" class="form-control" name="slug" placeholder="Category Slug">
+                  </div>
+
+                 <div class="col-md-6" style="left: 35%">
+
+                    <div class="custom-control custom-switch custom-switch-icon custom-control-inline">
+                    <div class="custom-switch-inner">
+                       <p class="mb-0"> Menuda Chiqsinmi! </p>
+                       <input name="is_menu" type="checkbox" class="custom-control-input" id="customSwitch-{{ i.id }}"
+                       {% if i.is_menu %} checked {% endif %}>
+                       <label class="custom-control-label" for="customSwitch-{{ i.id }}">
+                          <span class="switch-icon-left"><i class="fa fa-check"></i></span>
+                          <span class="switch-icon-right"><i class="fa fa-times"></i></span>
+                       </label>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+         </div>
+      </form>
+   </div>
+</div>
+
+{% endfor %}
+
+
+
+
+
+
+{% for i in ctgs %}
+<div class="modal fade" id="deleteModal-{{ i.id }}" tabindex="-1" role="dialog" aria-labelledby="LogoutModalTitle" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalTitle">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+            Rostdan Ham {{ i.name }}ni o'chirmochimisz?
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Yo'q</button>
+            <a href="{% url 'ctg-delete' pk=i.id %}" type="button" class="btn btn-primary">Ha</a>
+         </div>
+      </div>
+   </div>
+</div>
+
+
+
+{% endfor %}
+
+
+
+
+
+{% endblock %}
+
+
+

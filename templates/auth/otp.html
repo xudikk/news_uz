@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6-Digit OTP Input</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url("https://www.yudiz.com/codepen/animation-form/banner.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .otp-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .otp-title {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .otp-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .otp-input {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 1.2rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .otp-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+
+        .otp-input.error {
+            border-color: #ff4d4f;
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .error-message {
+            color: #ff4d4f;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .submit-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .submit-button:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 480px) {
+            .otp-input {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+
+            .otp-container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="otp-container">
+        <h2 class="otp-title">Enter 6-Digit OTP {{ request.session.code }}</h2>
+        <h3 style="color: red;">{{ error }}</h3>
+        <form id="otp-form" method="post">
+            {% csrf_token %}
+            <div class="otp-inputs">
+                <input type="text" maxlength="1" name="otp1" class="otp-input" required />
+                <input type="text" maxlength="1" name="otp2" class="otp-input" required />
+                <input type="text" maxlength="1" name="otp3" class="otp-input" required />
+                <input type="text" maxlength="1" name="otp4" class="otp-input" required />
+                <input type="text" maxlength="1" name="otp5" class="otp-input" required />
+                <input type="text" maxlength="1" name="otp6" class="otp-input" required />
+            </div>
+            <div class="error-message" id="error-message">Please enter valid digits</div>
+            <button type="submit" class="submit-button">Verify OTP</button>
+        </form>
+    </div>
+
+    <script>
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const errorMessage = document.getElementById('error-message');
+        const otpForm = document.getElementById('otp-form');
+
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                // Allow only digits
+                if (e.target.value && !/^[0-9]$/.test(e.target.value)) {
+                    e.target.value = '';
+                    e.target.classList.add('error');
+                    errorMessage.style.display = 'block';
+                    setTimeout(() => {
+                        e.target.classList.remove('error');
+                        errorMessage.style.display = 'none';
+                    }, 1000);
+                    return;
+                }
+
+                // Move to next input if current is filled
+                if (e.target.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                // Move to previous input on backspace if current is empty
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pasteData = e.clipboardData.getData('text').replace(/\D/g, '');
+                if (pasteData.length > 0) {
+                    for (let i = 0; i < Math.min(pasteData.length, otpInputs.length); i++) {
+                        otpInputs[i].value = pasteData[i] || '';
+                    }
+                    // Focus the last filled input or the first empty one
+                    const nextFocus = Math.min(pasteData.length, otpInputs.length - 1);
+                    otpInputs[nextFocus].focus();
+                }
+            });
+        });
+
+
+    </script>
+</body>
+</html>

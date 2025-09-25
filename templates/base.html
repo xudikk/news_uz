@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	{% load static %}
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<title>{% block title %} NewsUz {% endblock %}</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+	<link rel="stylesheet" href="{% static 'css/media.css' %}">
+	<link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+
+	{% block extra_style %}{% endblock %}
+
+	<style>
+
+		/*======================
+			404 page
+		=======================*/
+
+
+		.page_404{ padding:40px 0; background:#fff; font-family: 'Arvo', serif;
+		}
+
+		.page_404  img{ width:100%;}
+
+		.four_zero_four_bg{
+
+		 background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
+			height: 400px;
+			background-position: center;
+		 }
+
+
+		 .four_zero_four_bg h1{
+		 font-size:80px;
+		 }
+
+		  .four_zero_four_bg h3{
+					 font-size:80px;
+					 }
+
+					 .link_404{
+			color: #fff!important;
+			padding: 10px 20px;
+			background: #39ac31;
+			margin: 20px 0;
+			display: inline-block;}
+			.contant_box_404{ margin-top:-50px;}
+
+
+		 .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1.5rem;
+        }
+
+        .modal-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .confirm-button {
+            background-color: #ff4d4f;
+            color: white;
+        }
+
+        .confirm-button:hover {
+            background-color: #cc0000;
+        }
+
+        .cancel-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .cancel-button:hover {
+            background-color: #0056b3;
+        }
+
+
+		</style>
+
+
+
+</head>
+<body>
+
+    {% include 'partials/header.html' %}
+
+
+	{% if error == 404 %}
+		{% include 'partials/404.html' %}
+
+	{% else %}
+		{% block content %}{% endblock %}
+	{% endif %}
+
+
+	{% include 'partials/footer.html' %}
+	
+
+	<div class="modal" id="logoutModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Confirm Logout</h2>
+            <p>Are you sure you want to logout?</p>
+            <div class="modal-buttons">
+                <button class="modal-button cancel-button" onclick="closeModal()">Cancel</button>
+				<a href="{% url 'logout' %}" class="modal-button confirm-button">Logout</a>
+
+            </div>
+        </div>
+    </div>
+
+
+
+	<script src="{% static 'js/jquery.js' %}"></script>
+	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+	<script src="{% static 'js/main.js' %}"></script>
+	{% block extra_js %}{% endblock %}
+	 <script>
+        const modal = document.getElementById('logoutModal');
+
+        function showModal() {
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // Close modal when clicking outside the modal content
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+    </script>
+
+</body>
+</html>

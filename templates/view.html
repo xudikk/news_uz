@@ -1,0 +1,299 @@
+{%  extends 'base.html' %}
+{% load static %}
+{% block title %}News | View{% endblock %}
+
+{% block extra_style %}
+<style>
+	.comment-section {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 20px;
+		font-family: Arial, sans-serif;
+	}
+
+	.comment-title {
+		font-size: 24px;
+		font-weight: bold;
+		margin-bottom: 20px;
+	}
+
+	.comment-list {
+		list-style: none;
+		padding: 0;
+	}
+
+	.comment-item {
+		margin-bottom: 20px;
+	}
+
+	.comment-info {
+		background-color: #e9e9e9;
+		padding: 15px;
+		border-radius: 5px;
+	}
+
+	.comment-author {
+		font-weight: bold;
+		color: #333;
+		margin-bottom: 10px;
+	}
+
+	.comment-text {
+		margin: 10px 0;
+		color: #555;
+	}
+
+	.comment-date {
+		font-size: 12px;
+		color: #888;
+		margin-top: 10px;
+	}
+
+	.comment-hr {
+		border: 0;
+		border-top: 1px solid #ddd;
+		margin: 10px 0;
+	}
+
+	.sub-comment-list {
+		list-style: none;
+		padding-left: 50px;
+		margin-top: 10px;
+	}
+
+	.reply-button {
+		background-color: #007bff;
+		color: white;
+		border: none;
+		padding: 8px 16px;
+		border-radius: 4px;
+		cursor: pointer;
+		margin-top: 10px;
+	}
+
+	.reply-button:hover {
+		background-color: #0056b3;
+	}
+
+	.comment-form {
+		display: none;
+		margin-top: 15px;
+		padding: 15px;
+		background-color: #fff;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+	}
+
+	.form-input {
+		width: 100%;
+		padding: 8px;
+		margin-bottom: 10px;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+	}
+
+	.form-textarea {
+		width: 100%;
+		padding: 8px;
+		margin-bottom: 10px;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		resize: vertical;
+	}
+
+	.form-submit {
+		background-color: #28a745;
+		color: white;
+		border: none;
+		padding: 8px 16px;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+	.form-submit:hover {
+		background-color: #218838;
+	}
+
+	.add-comment-button {
+		background-color: #007bff;
+		color: white;
+		border: none;
+		padding: 10px 20px;
+		border-radius: 4px;
+		cursor: pointer;
+		margin-top: 20px;
+	}
+
+	.add-comment-button:hover {
+		background-color: #0056b3;
+	}
+
+	.add-comment-info {
+		font-size: 14px;
+		color: #666;
+		margin-top: 10px;
+	}
+</style>
+{% endblock %}
+
+
+
+
+
+{% block content %}
+	<div class="container wrapper">
+		<div class="longrek"></div>
+		<div class="clearfix"></div>
+		
+		<ol class="breadcrumb">
+			<li><a href="{% url  'home' %}">Home</a></li>
+			<li><a href="{% url 'ctg' slug=one_new.ctg.slug %}">{{ one_new.ctg.name }}</a></li>
+			<li class="active">{{ one_new.title }}</li>
+		</ol>
+		<div class="row">
+			<div class="col-md-8 col-xs-12">
+				<div class="view_img"><img src="{{ one_new.image1.url }}" alt=""></div>
+				<div class="news_box view">
+					<div class="view_title">{{ one_new.title }}</div>
+					<span class="date">{{ one_new.get_date }}</span>
+					<span class="news_type"><i class="fa fa-book"></i> {{ one_new.ctg.name }}</span>
+					<span class="news_type"><i class="fa fa-eye"></i> {{ one_new.views }}</span>
+					<div class="view_desc">
+					<p><b>{{ one_new.short_desc }}</b></p>
+
+
+						{% if one_new.image2 %}
+						<div id="bigfav" class="carousel slide view_slide" data-ride="carousel">
+							<div class="carousel-inner" role="listbox">
+								<div class="item active">
+									<img src="{{ one_new.image2.url }}" alt="...">
+								</div>
+
+							</div>
+						</div>
+						{% endif %}
+
+					<p>
+						{{ one_new.description }}
+					</p>
+				</div>
+				<ul class="tag">
+					{% for i in one_new.get_tags %}
+					<li><a href="{% url 'search' %}?search={{ i }}">#{{ i }}</a></li>
+					{% endfor %}
+				</ul>
+
+
+				{% if random_news %}
+				<div class="nav_news">
+					<a href="{% url 'view' pk=random_news.0.id %}" class="prev_news text-right">
+						<i class="fa fa-angle-left"></i>
+						{{ random_news.0.title }}
+					</a>
+					<a href="{% url 'view' pk=random_news.1.id %}" class="next_news">
+						{{ random_news.1.title }}
+						<i class="fa fa-angle-right"></i>
+					</a>
+					<div class="clearfix"></div>
+				</div>
+				{% endif %}
+
+<!--  *************************************************************					-->
+
+				<div class="comment-section">
+					<div class="comment-title">Izohlar <sup>{{ count }}</sup></div>
+					<ul class="comment-list">
+						{% for i in comments %}
+						<li class="comment-item">
+							<div class="comment-info">
+								<div class="comment-author">{{ i.user }}</div>
+								<p class="comment-text">{{ i.message }}</p>
+								<div class="comment-date">{{ i.get_date }}</div>
+								<button class="reply-button" onclick="toggleReplyForm(this)">Javob berish</button>
+								<form class="comment-form" method="post">
+									{% csrf_token %}
+									<input type="text" name="user" class="form-input" placeholder="Ism">
+									<input type="number" name="parent_id" value="{{ i.id }}"  class="form-input" hidden>
+									<textarea name="message" class="form-textarea" placeholder="Xabar"></textarea>
+									<button type="submit" class="form-submit">Yuborish</button>
+								</form>
+								<hr class="comment-hr">
+							</div>
+
+							{% if i.subs.all %}
+							<ul class="sub-comment-list">
+								{% for sub in i.subs.all %}
+								<li class="comment-item">
+									<div class="comment-info">
+										<div class="comment-author">{{ sub.user }}</div>
+										<p class="comment-text">{{ sub.message }}</p>
+										<div class="comment-date">{{ sub.get_date }}</div>
+										<hr class="comment-hr">
+									</div>
+								</li>
+								{% endfor %}
+
+							</ul>
+							{% endif %}
+
+						</li>
+						{% endfor %}
+
+					</ul>
+					<button class="add-comment-button" onclick="toggleMainCommentForm()">Izoh Yozish</button>
+					<form class="comment-form" id="mainCommentForm" method="post">
+						{% csrf_token %}
+						<input type="text" name="user" class="form-input" placeholder="Ism">
+						<textarea name="message" class="form-textarea" placeholder="Xabar"></textarea>
+						<button type="submit" class="form-submit">Yuborish</button>
+					</form>
+					<div class="add-comment-info">ushbu Yangilik haqida fikringizni qoldiring</div>
+				</div>
+	<!--  *************************************************************					-->
+
+
+				</div>
+			</div>
+			<div class="col-md-4 col-xs-12">
+				{% include 'partials/svejiy.html' %}
+
+				<div class="news_box rek">
+					<div class="rek_right">
+						
+					</div>
+				</div>
+
+				<div class="subscribe">
+					<div class="title">Saytimizga: <b>news.uz</b> Obuna bo'ling</div>
+					<form action="{% url 'subs_add' path='view' %}" method="post">
+						{% csrf_token %}
+						<div class="input-group">
+							<input type="text" name="email" placeholder="Email" required>
+							<button class="submit">Obuna bo'lish</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endblock %}
+
+
+
+{% block extra_js %}
+<script>
+	function toggleReplyForm(button) {
+		const form = button.nextElementSibling;
+		form.style.display = form.style.display === 'block' ? 'none' : 'block';
+	}
+
+	function toggleMainCommentForm() {
+		const form = document.getElementById('mainCommentForm');
+		form.style.display = form.style.display === 'block' ? 'none' : 'block';
+	}
+</script>
+{% endblock %}
+
+
+
+
