@@ -3,3 +3,5 @@
 #  Please contact before making any changes
 #
 #  Tashkent, Uzbekistan
+print('test')
+
