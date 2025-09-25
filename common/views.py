@@ -15,6 +15,7 @@ from django.conf import settings
 
 
 def index(request):
+    print("hello github")
     news = New.objects.all().order_by('-create')  # queryset
     random_news = [news[random.randint(0, len(news) - 1)], news[random.randint(0, len(news) - 1)]]
     aktual = New.objects.filter(Q(title__icontains="tramp") | Q(short_desc__icontains="tramp"))[:3]
